@@ -1,4 +1,5 @@
 using AuthApi.Data;
+using AuthApi.Repository;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -25,7 +26,13 @@ app.UseAuthorization();
 
 app.MapControllers();
 
+// Configuration Entity
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseInMemoryDatabase("AuthDb"));
+
+// add services 
+builder.Services.AddScoped<AppDbContext>();
+builder.Services.AddScoped<UserRepository>();
+
 
 app.Run();

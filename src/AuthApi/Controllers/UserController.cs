@@ -13,6 +13,7 @@ namespace AuthApi.Controllers
         {
             _logger = logger;
         }
+
         [HttpPost("register")]
         public IActionResult RegisterUser () 
         {
