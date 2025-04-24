@@ -18,6 +18,7 @@ namespace AuthApi.Services.User
 
             UserModel UserToAdd = new UserModel
             {
+                Id = NewUser.Id,    
                 Name = NewUser.Name,
                 LastName = NewUser.LastName,
                 Password = NewUser.Password,    
@@ -28,6 +29,13 @@ namespace AuthApi.Services.User
             var UserNew = _repository.Register(UserToAdd);
 
             return true;    
+        }
+
+        public List<UserModel> GetAll() 
+        {
+            // valdiar 
+            
+            return _repository.GetAll();    
         }
     }
 }

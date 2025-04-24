@@ -11,16 +11,29 @@ namespace AuthApi.Repository
             _context = context; 
         } 
 
-        public User Register(User newUser) 
+        public UserModel Register(UserModel newUser) 
         {
             try
             {
                 _context.Users.Add(newUser);
+                _context.SaveChanges(); 
                 return newUser;
             }
             catch (Exception ex)
             {
                 return null; 
+            }
+        }
+
+        public List<UserModel> GetAll()
+        {
+            try
+            {
+                return _context.Users.ToList();
+            }
+            catch (Exception ex)
+            {
+                return null;
             }
         }
     }
