@@ -1,6 +1,8 @@
 ﻿using AuthApi.Dtos;
 using AuthApi.Models;
+using AuthApi.Models.Utilities;
 using AuthApi.Repository;
+using Microsoft.AspNetCore.Http.HttpResults;
 using System.Diagnostics.CodeAnalysis;
 
 namespace AuthApi.Services.User
@@ -10,12 +12,10 @@ namespace AuthApi.Services.User
         private readonly UserRepository _repository; 
         public UserService(UserRepository repository) { _repository = repository; }
 
-        public bool Register(UserRegisterDto NewUser) 
+        public async Task<Result<UserModel>> Register(UserRegisterDto NewUser) 
         {
-            // validar 
+            // validar - aca llamare al servicio de validaciones mas adelante  
             
-            // mapear
-
             UserModel UserToAdd = new UserModel
             {
                 Id = NewUser.Id,    
@@ -26,16 +26,18 @@ namespace AuthApi.Services.User
                 DateOfBirth = NewUser.DateOfBirth
             };   
 
-            var UserNew = _repository.Register(UserToAdd);
+            var result = await _repository.Register(UserToAdd);
+            if (!result.IsSuccessful) return Result<UserModel>.Failure(result.Error);
 
-            return true;    
+            return Result<UserModel>.Success(result.Value); 
         }
 
-        public List<UserModel> GetAll() 
+        public async Task<Result<List<UserModel>>> GetAll() 
         {
-            // valdiar 
-            
-            return _repository.GetAll();    
+            // validar  
+            var result = await _repository.GetAll();    
+            if (!result.IsSuccessful) return Result<List<UserModel>>.Failure(result.Error); 
+            return Result<List<UserModel>>.Success(result.Value);
         }
     }
 }

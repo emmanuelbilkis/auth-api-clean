@@ -15,18 +15,20 @@ namespace AuthApi.Controllers
         }
 
         [HttpPost("register")]
-        public IActionResult RegisterUser (UserRegisterDto newUser) 
+        public async Task<IActionResult> RegisterUserAsync (UserRegisterDto newUser) 
         {
-            var result = _userService.Register(newUser);
-            return Ok(result);
+            var result = await _userService.Register(newUser);
+            if (!result.IsSuccessful) return BadRequest(result.Error);
+            return Ok(result.Value);    
         }
 
 
-        [HttpGet("getall")]
-        public IActionResult GetAll()
+        [HttpGet("get-all")]
+        public async Task<IActionResult> GetAllUserAsync()
         {
-            var result = _userService.GetAll();
-            return Ok(result);
+            var result = await _userService.GetAll();
+            if(!result.IsSuccessful) return BadRequest(result.Error);   
+            return Ok(result.Value);
         }
     }
 }
