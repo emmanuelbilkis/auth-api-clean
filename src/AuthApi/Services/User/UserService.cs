@@ -16,6 +16,7 @@ namespace AuthApi.Services.User
 
         public async Task<Result<UserModel>> Register(UserRegisterDto NewUser) 
         {
+            // validaicones de formatos y campos
             UserRegisterValidator validator = new UserRegisterValidator();
             ValidationResult resultValidator = validator.Validate(NewUser);
 
@@ -24,6 +25,9 @@ namespace AuthApi.Services.User
                 return Result<UserModel>.Failure(resultValidator.Errors.ToList().ToString());
             }
 
+            // luego vendran validaciones de regla de negocio 
+
+            //mapeo 
             UserModel UserToAdd = new UserModel
             {
                 Id = NewUser.Id,    
@@ -32,8 +36,9 @@ namespace AuthApi.Services.User
                 Password = NewUser.Password,    
                 Email = NewUser.Email,
                 DateOfBirth = NewUser.DateOfBirth
-            };   
-
+            };
+            
+            //llamo al repositorio 
             var result = await _repository.Register(UserToAdd);
 
             return Result<UserModel>.Success(result); 
