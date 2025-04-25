@@ -22,7 +22,7 @@ namespace AuthApi.Services.User
 
             if (!resultValidator.IsValid)
             {
-                return Result<UserModel>.Failure(resultValidator.Errors.ToList().ToString());
+                return Result<UserModel>.Failure(string.Join(" | ", resultValidator.Errors.Select(e => e.ErrorMessage)));
             }
 
             // luego vendran validaciones de regla de negocio 
