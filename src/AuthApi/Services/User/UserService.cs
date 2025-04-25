@@ -4,6 +4,8 @@ using AuthApi.Models.Utilities;
 using AuthApi.Repository;
 using Microsoft.AspNetCore.Http.HttpResults;
 using System.Diagnostics.CodeAnalysis;
+using AuthApi.Validators;
+using FluentValidation.Results;
 
 namespace AuthApi.Services.User
 {
@@ -14,8 +16,14 @@ namespace AuthApi.Services.User
 
         public async Task<Result<UserModel>> Register(UserRegisterDto NewUser) 
         {
-            // validar - aca llamare al servicio de validaciones mas adelante  
-            
+            UserRegisterValidator validator = new UserRegisterValidator();
+            ValidationResult resultValidator = validator.Validate(NewUser);
+
+            if (!resultValidator.IsValid)
+            {
+                return Result<UserModel>.Failure(resultValidator.Errors.ToList().ToString());
+            }
+
             UserModel UserToAdd = new UserModel
             {
                 Id = NewUser.Id,    
@@ -27,7 +35,6 @@ namespace AuthApi.Services.User
             };   
 
             var result = await _repository.Register(UserToAdd);
-            if (result is null) return Result<UserModel>.Failure("Error inesperado. Intentar nuevamente");
 
             return Result<UserModel>.Success(result); 
         }
