@@ -1,4 +1,5 @@
 using AuthApi.Data;
+using AuthApi.Middlewares;
 using AuthApi.Repository;
 using AuthApi.Services.User;
 using Microsoft.EntityFrameworkCore;
@@ -22,6 +23,9 @@ builder.Services.AddScoped<UserRepository>();
 builder.Services.AddScoped<UserService>();
 
 var app = builder.Build();
+
+// Configura el middleware para manejar excepciones globalmente
+app.UseMiddleware<GlobalExceptionMiddleware>(); // Esto agrega tu middleware personalizado
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
