@@ -27,17 +27,17 @@ namespace AuthApi.Services.User
             };   
 
             var result = await _repository.Register(UserToAdd);
-            if (!result.IsSuccessful) return Result<UserModel>.Failure(result.Error);
+            if (result is null) return Result<UserModel>.Failure("Error inesperado. Intentar nuevamente");
 
-            return Result<UserModel>.Success(result.Value); 
+            return Result<UserModel>.Success(result); 
         }
 
         public async Task<Result<List<UserModel>>> GetAll() 
         {
             // validar  
             var result = await _repository.GetAll();    
-            if (!result.IsSuccessful) return Result<List<UserModel>>.Failure(result.Error); 
-            return Result<List<UserModel>>.Success(result.Value);
+            if (result is null) return Result<List<UserModel>>.Failure("Error inesperado"); 
+            return Result<List<UserModel>>.Success(result);
         }
     }
 }

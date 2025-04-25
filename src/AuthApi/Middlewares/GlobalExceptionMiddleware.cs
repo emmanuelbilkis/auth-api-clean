@@ -22,10 +22,8 @@
                 // Log detallado para desarrolladores
                 _logger.LogError(ex, "Ocurrió una excepción no manejada.");
 
-                // También puedes capturar detalles adicionales, como la traza de la pila
                 _logger.LogError("Mensaje de la excepción: {Message}", ex.Message);
-                _logger.LogError("Pila de llamadas: {StackTrace}", ex.StackTrace);
-
+                
                 // Si la excepción tiene una InnerException, también la logueamos
                 if (ex.InnerException != null)
                 {
