@@ -1,6 +1,6 @@
 ﻿using AuthApi.Data;
 using AuthApi.Models;
-using AuthApi.Models.Utilities;
+//using AuthApi.Models;
 using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 

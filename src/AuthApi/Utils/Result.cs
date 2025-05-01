@@ -1,4 +1,4 @@
-﻿namespace AuthApi.Models.Utilities
+﻿namespace AuthApi.Utils
 {
     public class Result<T>
     {

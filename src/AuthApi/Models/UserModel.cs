@@ -15,7 +15,8 @@ namespace AuthApi.Models
         public DateTime DateOfBirth { get; set; }
         public int Age {
             get {
-                  return DateUtils.AgeCalculate(DateOfBirth);
+                  //return DateUtils.AgeCalculate(DateOfBirth); //sin metodo de extension
+                  return DateOfBirth.AgeCalculateExtension(); // con metodo de extension
                 } 
         }
     }

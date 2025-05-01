@@ -1,11 +1,11 @@
 ﻿using AuthApi.Dtos;
 using AuthApi.Models;
-using AuthApi.Models.Utilities;
 using AuthApi.Repository;
 using Microsoft.AspNetCore.Http.HttpResults;
 using System.Diagnostics.CodeAnalysis;
 using AuthApi.Validators;
 using FluentValidation.Results;
+using AuthApi.Utils;
 
 namespace AuthApi.Services.User
 {
