@@ -4,7 +4,7 @@ namespace AuthApi.Utils
 {
     public static class DateUtils
     {
-        public static int AgeCalculate(DateTime DateOfBirth) 
+        public static int CalculateAge(DateTime DateOfBirth) 
         {
             int age = DateTime.Today.Year - DateOfBirth.Year;
             var temp = new DateTime(DateTime.Today.Year,DateOfBirth.Month,DateOfBirth.Day);
@@ -14,7 +14,7 @@ namespace AuthApi.Utils
             return age;
         }
 
-        public static int AgeCalculateExtension(this DateTime DateOfBirth)
+        public static int CalculateAgeExtension(this DateTime DateOfBirth)
         {
             int age = DateTime.Today.Year - DateOfBirth.Year;
             var temp = new DateTime(DateTime.Today.Year, DateOfBirth.Month, DateOfBirth.Day);
@@ -24,7 +24,7 @@ namespace AuthApi.Utils
             return age;
         }
 
-        /*public static int AgeCalculateV2(DateTime DateOfBirth) 
+        /*public static int CalculateAgeV2(DateTime DateOfBirth) 
         {  
             int age = DateTime.Today.Year - DateOfBirth.Year; 
             if (DateOfBirth > DateTime.Today.AddYears(-age))
