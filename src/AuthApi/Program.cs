@@ -1,13 +1,15 @@
 using AuthApi.Data;
 using AuthApi.Middlewares;
+using AuthApi.Models.Options;
 using AuthApi.Repository;
 using AuthApi.Services.User;
+using Microsoft.AspNetCore.Builder.Extensions;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-
+builder.Services.Configure<SmtpOptions>(builder.Configuration.GetSection("SMTP"));
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();

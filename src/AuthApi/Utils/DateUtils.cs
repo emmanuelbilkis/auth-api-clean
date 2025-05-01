@@ -14,7 +14,7 @@ namespace AuthApi.Utils
             return age;
         }
 
-        public static int CalculateAgeExtension(this DateTime DateOfBirth)
+        public static int AgeCalculateExtension(this DateTime DateOfBirth)
         {
             int age = DateTime.Today.Year - DateOfBirth.Year;
             var temp = new DateTime(DateTime.Today.Year, DateOfBirth.Month, DateOfBirth.Day);

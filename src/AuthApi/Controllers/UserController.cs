@@ -29,6 +29,6 @@ namespace AuthApi.Controllers
             var result = await _userService.GetAll();
             if(!result.IsSuccessful) return BadRequest(result.Error);   
             return Ok(result.Value);
-        }
+        } 
     }
 }
