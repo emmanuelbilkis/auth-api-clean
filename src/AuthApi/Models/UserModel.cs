@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using AuthApi.Utils;
+using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
 
 namespace AuthApi.Models
@@ -12,6 +13,10 @@ namespace AuthApi.Models
         public string Email { get; set; }
         public string Password { get; set; }
         public DateTime DateOfBirth { get; set; }
-        public int Age { get; set; }
+        public int Age {
+            get {
+                  return DateUtils.AgeCalculate(DateOfBirth);
+                } 
+        }
     }
 }
