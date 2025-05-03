@@ -19,5 +19,6 @@ namespace AuthApi.Models
                   return DateOfBirth.AgeCalculateExtension(); // con metodo de extension
                 } 
         }
+        public bool IsActive { get; set; } = false;
     }
 }

@@ -2,6 +2,8 @@ using AuthApi.Data;
 using AuthApi.Middlewares;
 using AuthApi.Models.Options;
 using AuthApi.Repository;
+using AuthApi.Services.Email;
+using AuthApi.Services.Smtp;
 using AuthApi.Services.User;
 using Microsoft.AspNetCore.Builder.Extensions;
 using Microsoft.EntityFrameworkCore;
@@ -19,11 +21,23 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseInMemoryDatabase("AuthDb"));
 
+// Configurar CORS
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("CorsPolicy", app =>
+    {
+        app.AllowAnyOrigin();
+        app.AllowAnyHeader();
+        app.AllowAnyMethod();
+    });
+});
+
 // add services 
 builder.Services.AddScoped<AppDbContext>();
 builder.Services.AddScoped<UserRepository>();
 builder.Services.AddScoped<UserService>();
-
+builder.Services.AddScoped<EmailService>();
+builder.Services.AddScoped<SmtpService>();  
 var app = builder.Build();
 
 // Configura el middleware para manejar excepciones globalmente
@@ -37,7 +51,7 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-
+app.UseCors("CorsPolicy");
 app.UseAuthorization();
 
 app.MapControllers();
