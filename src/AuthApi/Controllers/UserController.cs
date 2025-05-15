@@ -1,5 +1,6 @@
 using AuthApi.Dtos;
 using AuthApi.Services.Email;
+using AuthApi.Services.Token;
 using AuthApi.Services.User;
 using Microsoft.AspNetCore.Mvc;
 
@@ -11,10 +12,14 @@ namespace AuthApi.Controllers
     {
         private readonly UserService _userService;  
         private readonly EmailService _emailService;    
-        public UserController(UserService userService, EmailService emailService)
+        private readonly TokenService _tokenService;
+        public UserController(UserService userService, 
+                              EmailService emailService,
+                              TokenService tokenService)
         {
             _userService = userService;
             _emailService = emailService;
+            _tokenService = tokenService;   
         }
 
         [HttpPost("register")]
@@ -23,8 +28,10 @@ namespace AuthApi.Controllers
             var result = await _userService.Register(newUser);
             if (!result.IsSuccessful) return BadRequest(result.Error);
 
-            // generar token 
-            _emailService.SendActivationEmail(result.Value.Name, result.Value.Email,"d5as675das67");
+            var tokenResult = _tokenService.AddToken(); 
+            if (!tokenResult.IsSuccessful) return BadRequest(tokenResult);
+
+            _emailService.SendActivationEmail(result.Value.Name, result.Value.Email, tokenResult.Value);
             return Ok(result.Value);    
         }
 
