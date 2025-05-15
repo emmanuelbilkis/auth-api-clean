@@ -22,12 +22,5 @@ namespace AuthApi.Repository
             await _context.SaveChangesAsync(); 
             return activationTokenModel;    
         }
-
-        public async Task<UserModel> Register(UserModel newUser)
-        {
-            await _context.Users.AddAsync(newUser);
-            await _context.SaveChangesAsync();
-            return newUser;
-        }
     }
 }
