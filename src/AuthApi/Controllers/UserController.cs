@@ -23,6 +23,7 @@ namespace AuthApi.Controllers
             var result = await _userService.Register(newUser);
             if (!result.IsSuccessful) return BadRequest(result.Error);
 
+            // generar token 
             _emailService.SendActivationEmail(result.Value.Name, result.Value.Email,"d5as675das67");
             return Ok(result.Value);    
         }
@@ -40,7 +41,6 @@ namespace AuthApi.Controllers
         public IActionResult ActivateAccount([FromQuery] string token, [FromQuery] string email)
         {
             //validar 
-           
             //llamar al metodo para activar la cuenta 
 
             return Ok("xd");   
