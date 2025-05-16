@@ -1,6 +1,5 @@
 ﻿using AuthApi.Data;
 using AuthApi.Models;
-//using AuthApi.Models;
 using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 
@@ -20,7 +19,7 @@ namespace AuthApi.Repository
         public async Task<UserModel> Register(UserModel newUser)
         {
             await _context.Users.AddAsync(newUser);
-            await _context.SaveChangesAsync();
+            //await _context.SaveChangesAsync();
 
             return newUser;
         }

@@ -11,30 +11,15 @@ namespace AuthApi.Controllers
     public class UserController : ControllerBase
     {
         private readonly UserService _userService;  
-        private readonly EmailService _emailService;    
-        private readonly TokenService _tokenService;
-        public UserController(UserService userService, 
-                              EmailService emailService,
-                              TokenService tokenService)
-        {
-            _userService = userService;
-            _emailService = emailService;
-            _tokenService = tokenService;   
-        }
+        public UserController(UserService userService){ _userService = userService;}
 
         [HttpPost("register")]
         public async Task<IActionResult> RegisterUserAsync (UserRegisterDto newUser) 
         {
             var result = await _userService.Register(newUser);
             if (!result.IsSuccessful) return BadRequest(result.Error);
-
-            var tokenResult = _tokenService.AddToken(); 
-            if (!tokenResult.IsSuccessful) return BadRequest(tokenResult);
-
-            _emailService.SendActivationEmail(result.Value.Name, result.Value.Email, tokenResult.Value);
             return Ok(result.Value);    
         }
-
 
         [HttpGet("get-all")]
         public async Task<IActionResult> GetAllUserAsync()
@@ -49,7 +34,6 @@ namespace AuthApi.Controllers
         {
             //validar 
             //llamar al metodo para activar la cuenta 
-
             return Ok("xd");   
         }
     }

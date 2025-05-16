@@ -1,5 +1,6 @@
 ﻿using AuthApi.Dtos;
 using AuthApi.Services.Smtp;
+using AuthApi.Utils;
 using MimeKit;
 
 namespace AuthApi.Services.Email
@@ -13,7 +14,7 @@ namespace AuthApi.Services.Email
             _smtpService = smtpService; 
         }
 
-        public async Task<bool> SendActivationEmail(string destName,string destEmail, string token, CancellationToken cancellationToken = default)
+        public async Task<Result<bool>> SendActivationEmail(string destName,string destEmail, string token, CancellationToken cancellationToken = default)
         {
             var message = new MimeMessage();
 
@@ -38,7 +39,8 @@ namespace AuthApi.Services.Email
             message.Body = builder.ToMessageBody();
 
             await _smtpService.EnviarAsync(message,cancellationToken);
-            return true;
+
+            return Result<bool>.Success(true);
         }
     }
 }
