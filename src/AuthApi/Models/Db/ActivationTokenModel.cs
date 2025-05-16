@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace AuthApi.Models
+namespace AuthApi.Models.Db
 {
     public class ActivationTokenModel
     {
@@ -9,7 +9,7 @@ namespace AuthApi.Models
         [Required]
         public string Token { get; set; }
         public DateTime CreationDate { get; set; }
-        public DateTime ExpirationDate { get; set; } 
-        public bool Active { get; set; }    
+        public DateTime ExpirationDate { get; set; }
+        public bool Active { get; set; }
     }
 }

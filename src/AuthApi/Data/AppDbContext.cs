@@ -1,4 +1,5 @@
 ﻿using AuthApi.Models;
+using AuthApi.Models.Db;
 using Microsoft.EntityFrameworkCore;
 
 namespace AuthApi.Data
