@@ -4,6 +4,7 @@ using AuthApi.Models.Options;
 using AuthApi.Repository;
 using AuthApi.Services.Email;
 using AuthApi.Services.Smtp;
+using AuthApi.Services.Token;
 using AuthApi.Services.User;
 using Microsoft.AspNetCore.Builder.Extensions;
 using Microsoft.EntityFrameworkCore;
@@ -38,6 +39,8 @@ builder.Services.AddScoped<UserRepository>();
 builder.Services.AddScoped<UserService>();
 builder.Services.AddScoped<EmailService>();
 builder.Services.AddScoped<SmtpService>();  
+builder.Services.AddScoped<TokenService>();
+builder.Services.AddScoped<TokenRepository>();
 var app = builder.Build();
 
 // Configura el middleware para manejar excepciones globalmente
