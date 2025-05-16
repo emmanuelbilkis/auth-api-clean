@@ -1,5 +1,4 @@
-﻿
-using AuthApi.Models;
+﻿using AuthApi.Models.Db;
 using AuthApi.Repository;
 using AuthApi.Utils;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;

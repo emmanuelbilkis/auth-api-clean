@@ -1,5 +1,5 @@
 ﻿using AuthApi.Data;
-using AuthApi.Models;
+using AuthApi.Models.Db;
 using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 

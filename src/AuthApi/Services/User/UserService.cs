@@ -1,5 +1,4 @@
 ﻿using AuthApi.Dtos;
-using AuthApi.Models;
 using AuthApi.Repository;
 using Microsoft.AspNetCore.Http.HttpResults;
 using System.Diagnostics.CodeAnalysis;
@@ -8,6 +7,7 @@ using FluentValidation.Results;
 using AuthApi.Utils;
 using AuthApi.Services.Token;
 using AuthApi.Services.Email;
+using AuthApi.Models.Db;
 
 namespace AuthApi.Services.User
 {
