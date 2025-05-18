@@ -2,6 +2,7 @@
 {
     public class SmtpOptions
     {
+       public string SourceEmail { get; set; }
        public string? Server { get; set; }
        public int Port { get; set; }
        public string? Username { get; set; }

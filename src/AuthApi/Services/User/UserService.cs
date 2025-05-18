@@ -13,7 +13,7 @@ namespace AuthApi.Services.User
 {
     public class UserService
     {
-        private const string msjErrorUser = "Hubo problamas al crear el usuario, vuevla a intentarlo."; 
+        private const string msjErrorUser = "There were problems creating the user. Please try again."; 
         private readonly UserRepository _repository;
         private readonly TokenService _tokenService;
         private readonly EmailService _emailService;
