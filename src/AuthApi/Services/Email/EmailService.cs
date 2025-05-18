@@ -19,12 +19,19 @@ namespace AuthApi.Services.Email
 
         public async Task<Result<bool>> SendActivationEmail(string destName,string destEmail, string token, CancellationToken cancellationToken = default)
         {
-            string activationUrl = CreateUrl(token, destEmail);
-            var message = CreateMessage(destName, destEmail,activationUrl);
-            await _smtpService.EnviarAsync(message,cancellationToken);
+            
+             string activationUrl = CreateUrl(token, destEmail);
+             var message = CreateMessage(destName, destEmail, activationUrl);
+             var result = await _smtpService.EnviarAsync(message, cancellationToken);
+
+             if (!result.IsSuccessful)
+             {
+                return Result<bool>.Failure(result.Error);
+             }
 
             return Result<bool>.Success(true);
         }
+
         private string CreateUrl(string token, string destEmail) => $"https://localhost:7128/api/user/activate-account?token={Uri.EscapeDataString(token)}&email={Uri.EscapeDataString(destEmail)}";
         private MimeMessage CreateMessage(string destName, string destEmail,string url) 
         {

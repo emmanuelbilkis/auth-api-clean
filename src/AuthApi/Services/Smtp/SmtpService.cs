@@ -3,31 +3,45 @@ using Microsoft.Extensions.Options;
 using MimeKit;
 using MailKit.Net.Smtp;
 using MailKit.Security;
+using AuthApi.Utils;
 
 namespace AuthApi.Services.Smtp
 {
     public class SmtpService
     {
         public readonly SmtpOptions _options;
+        private readonly ILogger<SmtpService> _logger;
 
-        public SmtpService(IOptionsMonitor<SmtpOptions> options)
+        public SmtpService(IOptionsMonitor<SmtpOptions> options, ILogger<SmtpService> logger)
         {
             _options = options.CurrentValue;
+            _logger = logger;
         }   // IoptionMonitor nos permite que si en el archivo de configuracion cambia algo, esta configuracion podra ser cargada nuevamente sin necesidad de reiniciar la app
 
-        public async Task EnviarAsync(MimeMessage message, CancellationToken cancellationToken = default)
+        public async Task<Result<bool>> EnviarAsync(MimeMessage message, CancellationToken cancellationToken = default)
         {
-            using (var client = new SmtpClient())
+            try
             {
-                await client.ConnectAsync(_options.Server, _options.Port, _options.UseSsl, cancellationToken);
+                using (var client = new SmtpClient())
+                {
+                    await client.ConnectAsync(_options.Server, _options.Port, _options.UseSsl, cancellationToken);
 
-                if (!string.IsNullOrEmpty(_options.Username))
-                    await client.AuthenticateAsync(_options.Username, _options.Password, cancellationToken);
+                    if (!string.IsNullOrEmpty(_options.Username))
+                        await client.AuthenticateAsync(_options.Username, _options.Password, cancellationToken);
 
-                await client.SendAsync(message, cancellationToken);
-                await client.DisconnectAsync(true, cancellationToken);
+                    await client.SendAsync(message, cancellationToken);
+                    await client.DisconnectAsync(true, cancellationToken);
+                }
+
+                return Result<bool>.Success(true);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"SMTP error: {ex.Message} | Origen: {ex.Source} - Error capturado en SmtpService");
+                return Result<bool>.Failure("No se pudo enviar el mail.");
             }
         }
+
 
     }
 }
