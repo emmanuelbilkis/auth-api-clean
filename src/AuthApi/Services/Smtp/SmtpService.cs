@@ -35,13 +35,10 @@ namespace AuthApi.Services.Smtp
 
                 return Result<bool>.Success(true);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                _logger.LogError($"SMTP error: {ex.Message} | Origen: {ex.Source} - Error capturado en SmtpService");
                 return Result<bool>.Failure("No se pudo enviar el mail.");
             }
         }
-
-
     }
 }

@@ -19,10 +19,16 @@ namespace AuthApi.Repository
         public async Task<UserModel> Register(UserModel newUser)
         {
             await _context.Users.AddAsync(newUser);
-            //await _context.SaveChangesAsync();
+            await _context.SaveChangesAsync();
 
             return newUser;
         }
+
+        public async Task<UserModel> GetUserForEmail(string email) 
+        {
+            var user = await _context.Users.FirstOrDefaultAsync(u=>u.Email == email);
+            return user; 
+        }   
 
         public async Task<List<UserModel>> GetAll()
         {

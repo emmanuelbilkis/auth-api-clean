@@ -22,5 +22,11 @@ namespace AuthApi.Repository
             await _context.SaveChangesAsync(); 
             return activationTokenModel;    
         }
+        public async Task<ActivationTokenModel> GetTokenForUSer(UserModel user)
+        {
+            var token = await _context.ActivationTokens
+                              .FirstOrDefaultAsync(t => t.UserId == user.Id && t.Active == true);
+            return token;
+        }
     }
 }

@@ -19,8 +19,8 @@ namespace AuthApi.Services.Token
         {
             var tokenModel =  TokenModelCreate(CrearToken());
             var token =  await _tokenRepository.AddToken(tokenModel);
-            if (token is null) return Result<string>.Failure("No se pudo crear el token"); 
-
+            if (token is null) return Result<string>.Failure("No se pudo crear el token.");
+            
             return Result<string>.Success(token.Token); 
         }
         private ActivationTokenModel TokenModelCreate(string token) 

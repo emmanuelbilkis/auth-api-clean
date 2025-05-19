@@ -12,8 +12,7 @@ using AuthApi.Models.Db;
 namespace AuthApi.Services.User
 {
     public class UserService
-    {
-        private const string msjErrorUser = "There were problems creating the user. Please try again."; 
+    { 
         private readonly UserRepository _repository;
         private readonly TokenService _tokenService;
         private readonly EmailService _emailService;
@@ -41,23 +40,16 @@ namespace AuthApi.Services.User
             
             // call repository  
             var result = await _repository.Register(UserToAdd);
-            if (result is null) return Result<UserModel>.Failure(msjErrorUser);
+            if (result is null) return Result<UserModel>.Failure("No se pudo crear el usuario. Problemas al registrarlo en la Bd.");
 
             //call TokenService 
             var tokenResult = await _tokenService.AddToken();
-            if (!tokenResult.IsSuccessful) { 
-                _logger.LogError(tokenResult.Error);
-                return Result<UserModel>.Failure(msjErrorUser);
-            }
-
+            if (!tokenResult.IsSuccessful) return Result<UserModel>.Failure(tokenResult.Error);
+   
             // call EmailService 
             var mailResult = await _emailService.SendActivationEmail(result.Name, result.Email, tokenResult.Value);
-            if (!mailResult.IsSuccessful)
-            {
-                _logger.LogError(mailResult.Error); 
-                return Result<UserModel>.Failure(msjErrorUser);
-            }
-
+            if (!mailResult.IsSuccessful) return Result<UserModel>.Failure(mailResult.Error);
+            
             return Result<UserModel>.Success(result); 
         }
 
@@ -73,6 +65,7 @@ namespace AuthApi.Services.User
 
             return Result<bool>.Success(true);
         }
+
 
         private UserModel CreateModelUSer(UserRegisterDto NewUser) {
             

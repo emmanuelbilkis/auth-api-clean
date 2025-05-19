@@ -22,5 +22,8 @@ namespace AuthApi.Models.Db
             }
         }
         public bool IsActive { get; set; } = false;
+        
+        // Propiedad de navegación: uno a muchos (un usuario puede tener varios tokens)
+        public ICollection<ActivationTokenModel> ActivationTokens { get; set; }
     }
 }
