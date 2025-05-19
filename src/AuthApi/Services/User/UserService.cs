@@ -8,6 +8,8 @@ using AuthApi.Utils;
 using AuthApi.Services.Token;
 using AuthApi.Services.Email;
 using AuthApi.Models.Db;
+using Microsoft.EntityFrameworkCore;
+using AuthApi.Data;
 
 namespace AuthApi.Services.User
 {
@@ -17,16 +19,19 @@ namespace AuthApi.Services.User
         private readonly TokenService _tokenService;
         private readonly EmailService _emailService;
         private readonly ILogger<UserService> _logger;
+        private readonly AppDbContext _context;
         public UserService(UserRepository repository,
                            TokenService tokenService,
                            EmailService emailService,
-                           ILogger<UserService> logger
+                           ILogger<UserService> logger,
+                           AppDbContext context
                            ) 
         { 
             _repository = repository; 
             _tokenService = tokenService;
             _emailService = emailService;
             _logger = logger; 
+            _context = context;
         }
 
         public async Task<Result<UserModel>> Register(UserRegisterDto NewUser) 
@@ -66,31 +71,43 @@ namespace AuthApi.Services.User
             return Result<bool>.Success(true);
         }
 
-        public async Task<Result<bool>> ActiveCount(string email,string token) 
+        public async Task<Result<bool>> ActivateAccountAsync(string email,string token) 
         {
             // traigo el usuario por mail y controlo q exista 
             var user = await _repository.GetUserForEmail(email);
             if (user == null) return Result<bool>.Failure("No existe el usuario con el email solicitado.");
 
             //con el usuario obtengo el unico token activo del mismo (puede tener varios token pero solo uno activo para usar)
-            // no hago aca el control e si esta vencido o no ya que en la consulta de entyti traigoo solo el token activado siu es q hay sino traera null
-            var tokenResult = await _tokenService.GetTokenForUSer(user);
-            if (!tokenResult.IsSuccessful) return Result<bool>.Failure(tokenResult.Error);
+            // no hago aca el control de si el token esta vencido o no, ya que en la consulta de entity traigo solo el unico token activado, si es que existe, sino traera null.
+            var activeTokenResult = await _tokenService.GetActiveTokenForUserAsync(user);
+            if (!activeTokenResult.IsSuccessful) return Result<bool>.Failure(activeTokenResult.Error);
             
             // contorlo q el token corresponda al mandado por el usuario usuario con respecto al q tiene en la bd. en esta instancia existe y es activo
-            if(tokenResult.Value.Token != token) return Result<bool>.Failure("El token no corresponde.");
+            if(activeTokenResult.Value.Token != token) return Result<bool>.Failure("El token no corresponde.");
+
+
+            // Aca comienza la transacción para manejar dos actualizaciones en la bd
+            using var transaction = await _context.Database.BeginTransactionAsync();
 
             // se activa la cuenta del usuario
-            var userActivationResult = await _repository.Activar(user);
-            if (!userActivationResult) return Result<bool>.Failure("Hubo problemas al activar el usuario.");
+            var userActivationResult = await _repository.ActivateUserAsync(user);
+            if (!userActivationResult) { 
+                await transaction.RollbackAsync();
+                return Result<bool>.Failure($"Hubo problemas al activar el usuario de correo: {email}");
+            }
             
             //se desactiva el token previamente usado 
-            var tokenDesactivationResult = await _tokenService.Desactivar(tokenResult.Value);
-            if (!tokenDesactivationResult.IsSuccessful) return Result<bool>.Failure("Hubo problemas al desactivar el token."); 
+            var tokenDesactivationResult = await _tokenService.DeactivateTokenAsync(activeTokenResult.Value);
+            if (!tokenDesactivationResult.IsSuccessful) 
+            {
+                await transaction.RollbackAsync();
+                return Result<bool>.Failure($"Hubo problemas al desactivar el token. No se pudo activar el usuario: {email}");
+            }
+
+            await transaction.CommitAsync();
 
             // todo salio bien se retorna true 
             return Result<bool>.Success(true);  
-
         }
 
         private UserModel CreateModelUSer(UserRegisterDto NewUser) {

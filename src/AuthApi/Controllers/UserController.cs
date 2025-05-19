@@ -32,10 +32,10 @@ namespace AuthApi.Controllers
         [HttpGet("activate-account")]
         public async Task<IActionResult> ActivateAccount([FromQuery] string token, [FromQuery] string email)
         {
-            var result = await _userService.ActiveCount(email, token);
-            if (!result.IsSuccessful) return BadRequest(result.Error);  
-            
-            return Ok("Cuenta activada.");   
+            var result = await _userService.ActivateAccountAsync(email, token);
+            if (!result.IsSuccessful) return BadRequest(result.Error);
+
+            return Ok(new { message = "Cuenta activada correctamente", email });
         }
     }
 }

@@ -19,6 +19,7 @@ namespace AuthApi.Repository
         public async Task<UserModel> Register(UserModel newUser)
         {
             await _context.Users.AddAsync(newUser);
+            throw new Exception("Probando el middleware");
             await _context.SaveChangesAsync();
 
             return newUser;
@@ -36,7 +37,7 @@ namespace AuthApi.Repository
             return users;
         }
 
-        public async Task<bool> Activar (UserModel user) 
+        public async Task<bool> ActivateUserAsync(UserModel user) 
         {
             user.IsActive = true; 
             _context.SaveChangesAsync();

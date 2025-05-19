@@ -36,17 +36,17 @@ namespace AuthApi.Services.Token
             return tokenModel; 
         }
 
-        public async Task<Result<ActivationTokenModel>> GetTokenForUSer(UserModel user) 
+        public async Task<Result<ActivationTokenModel>> GetActiveTokenForUserAsync(UserModel user) 
         {
             var token = await _tokenRepository.GetTokenForUSer(user);
-            if (token is null) return Result<ActivationTokenModel>.Failure("No se encontro el token con el usuario solicitado.");
+            if (token is null) return Result<ActivationTokenModel>.Failure("No se encontro el token activo con el usuario solicitado.");
 
             return Result<ActivationTokenModel>.Success(token); 
         }
 
-        public async Task<Result<bool>> Desactivar(ActivationTokenModel token)
+        public async Task<Result<bool>> DeactivateTokenAsync(ActivationTokenModel token)
         {
-            var result = await _tokenRepository.Desactivar(token);
+            var result = await _tokenRepository.DeactivateTokenAsync(token);
             if (!result) return Result<bool>.Failure("No se pudo desactivar el Token. Consultar con el desarrollador de backend encargado.");
             
             return Result<bool>.Success(result);

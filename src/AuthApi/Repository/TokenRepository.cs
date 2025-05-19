@@ -29,7 +29,7 @@ namespace AuthApi.Repository
             return token;
         }
 
-        public async Task<bool> Desactivar(ActivationTokenModel token) 
+        public async Task<bool> DeactivateTokenAsync(ActivationTokenModel token) 
         {
             token.ExpirationDate = DateTime.UtcNow;
             return true; 
