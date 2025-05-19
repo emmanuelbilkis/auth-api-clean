@@ -12,7 +12,6 @@ namespace AuthApi.Models.Db
         public string Token { get; set; }
         public DateTime CreationDate { get; set; }
         public DateTime ExpirationDate { get; set; }
-        public bool Active { get; set; }
         // Propiedad de navegación: muchos a uno
         public UserModel User { get; set; }
     }

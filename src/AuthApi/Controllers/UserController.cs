@@ -30,11 +30,12 @@ namespace AuthApi.Controllers
         }
 
         [HttpGet("activate-account")]
-        public IActionResult ActivateAccount([FromQuery] string token, [FromQuery] string email)
+        public async Task<IActionResult> ActivateAccount([FromQuery] string token, [FromQuery] string email)
         {
-            //validar 
-            //llamar al metodo para activar la cuenta 
-            return Ok("xd");   
+            var result = await _userService.ActiveCount(email, token);
+            if (!result.IsSuccessful) return BadRequest(result.Error);  
+            
+            return Ok("Cuenta activada.");   
         }
     }
 }

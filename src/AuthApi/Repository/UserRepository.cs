@@ -35,6 +35,14 @@ namespace AuthApi.Repository
             var users = await _context.Users.ToListAsync();
             return users;
         }
+
+        public async Task<bool> Activar (UserModel user) 
+        {
+            user.IsActive = true; 
+            _context.SaveChangesAsync();
+
+            return true; 
+        }
     }
 }
 

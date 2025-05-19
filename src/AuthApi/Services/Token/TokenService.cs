@@ -1,6 +1,7 @@
 ﻿using AuthApi.Models.Db;
 using AuthApi.Repository;
 using AuthApi.Utils;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using System.ComponentModel.DataAnnotations;
 
@@ -30,10 +31,25 @@ namespace AuthApi.Services.Token
                   Token = token,
                   CreationDate = DateTime.UtcNow,
                   ExpirationDate = DateTime.UtcNow.AddHours(1),
-                  Active = true
             };
 
             return tokenModel; 
+        }
+
+        public async Task<Result<ActivationTokenModel>> GetTokenForUSer(UserModel user) 
+        {
+            var token = await _tokenRepository.GetTokenForUSer(user);
+            if (token is null) return Result<ActivationTokenModel>.Failure("No se encontro el token con el usuario solicitado.");
+
+            return Result<ActivationTokenModel>.Success(token); 
+        }
+
+        public async Task<Result<bool>> Desactivar(ActivationTokenModel token)
+        {
+            var result = await _tokenRepository.Desactivar(token);
+            if (!result) return Result<bool>.Failure("No se pudo desactivar el Token. Consultar con el desarrollador de backend encargado.");
+            
+            return Result<bool>.Success(result);
         }
     }
 }
