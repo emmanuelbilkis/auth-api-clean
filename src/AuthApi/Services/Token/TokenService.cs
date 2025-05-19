@@ -16,19 +16,21 @@ namespace AuthApi.Services.Token
             _tokenRepository = tokenRepository; 
         }
         private string CrearToken() => Guid.NewGuid().ToString();  
-        public async Task<Result<string>> AddToken() 
+        public async Task<Result<ActivationTokenModel>> AddToken(UserModel user) 
         {
-            var tokenModel =  TokenModelCreate(CrearToken());
+            var tokenModel =  TokenModelCreate(CrearToken(),user);
             var token =  await _tokenRepository.AddToken(tokenModel);
-            if (token is null) return Result<string>.Failure("No se pudo crear el token.");
+            if (token is null) return Result<ActivationTokenModel>.Failure("No se pudo crear el token.");
             
-            return Result<string>.Success(token.Token); 
+            return Result<ActivationTokenModel>.Success(token); 
         }
-        private ActivationTokenModel TokenModelCreate(string token) 
+        private ActivationTokenModel TokenModelCreate(string token, UserModel user) 
         {
             ActivationTokenModel tokenModel = new ActivationTokenModel
             {
                   Token = token,
+                  User = user,
+                  UserId = user.Id,
                   CreationDate = DateTime.UtcNow,
                   ExpirationDate = DateTime.UtcNow.AddHours(1),
             };

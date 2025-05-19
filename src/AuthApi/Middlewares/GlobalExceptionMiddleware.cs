@@ -1,4 +1,6 @@
-﻿namespace AuthApi.Middlewares
+﻿using System.Diagnostics;
+
+namespace AuthApi.Middlewares
 {
     public class GlobalExceptionMiddleware
     {
@@ -15,26 +17,38 @@
         {
             try
             {
-                await _next(context); // Continúa con el pipeline
+                await _next(context);
             }
             catch (Exception ex)
             {
-                // Log detallado para desarrolladores
+                // Logs generales
                 _logger.LogError(ex, "Ocurrió una excepción no manejada.");
+                _logger.LogError("Mensaje: {Message}", ex.Message);
 
-                _logger.LogError("Mensaje de la excepción: {Message}", ex.Message);
+                // StackTrace: lugar exacto donde explotó
+                var methodInfo = new StackTrace(ex, true)
+                                    .GetFrames()?
+                                    .FirstOrDefault(f => f.GetMethod()?.DeclaringType?.Namespace?.StartsWith("TuProyecto") == true); // filtra por tu proyecto
 
-                _logger.LogError("Ubicacion:", ex.Source);
-
-                // Si la excepción tiene una InnerException, también la logueamos
-                if (ex.InnerException != null)
+                if (methodInfo != null)
                 {
-                    _logger.LogError("Excepción interna: {InnerExceptionMessage}", ex.InnerException.Message);
-                    _logger.LogError("Pila de llamadas de la excepción interna: {InnerExceptionStackTrace}", ex.InnerException.StackTrace);
+                    var method = methodInfo.GetMethod();
+                    var file = methodInfo.GetFileName();
+                    var line = methodInfo.GetFileLineNumber();
+
+                    _logger.LogError("Método: {Method}", method.Name);
+                    _logger.LogError("Clase: {Class}", method.DeclaringType?.FullName);
+                    _logger.LogError("Archivo: {File}", file);
+                    _logger.LogError("Línea: {Line}", line);
                 }
 
-                _logger.LogError("Método HTTP: {Method}", context.Request.Method);
-                _logger.LogError("Ruta: {Path}", context.Request.Path);
+                if (ex.InnerException != null)
+                {
+                    _logger.LogError("Excepción interna: {InnerMessage}", ex.InnerException.Message);
+                    _logger.LogError("Stack interna: {InnerStack}", ex.InnerException.StackTrace);
+                }
+
+                _logger.LogError("HTTP {Method} {Path}", context.Request.Method, context.Request.Path);
 
                 context.Response.StatusCode = 500;
                 context.Response.ContentType = "application/json";

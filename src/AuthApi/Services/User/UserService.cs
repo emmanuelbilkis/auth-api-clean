@@ -39,22 +39,29 @@ namespace AuthApi.Services.User
             //validations
             var errorsResult = Validator(NewUser);
             if (!errorsResult.IsSuccessful) return Result<UserModel>.Failure(errorsResult.Error);
-            
+
+            // Aca comienza la transacción para manejar dos actualizaciones en la bd
+            //using var transaction = await _context.Database.BeginTransactionAsync();
+
             //maps
             var UserToAdd = CreateModelUSer(NewUser);
-            
-            // call repository  
-            var result = await _repository.Register(UserToAdd);
-            if (result is null) return Result<UserModel>.Failure("No se pudo crear el usuario. Problemas al registrarlo en la Bd.");
 
             //call TokenService 
-            var tokenResult = await _tokenService.AddToken();
+            var tokenResult = await _tokenService.AddToken(UserToAdd);
             if (!tokenResult.IsSuccessful) return Result<UserModel>.Failure(tokenResult.Error);
+
+            //UserToAdd.ActivationTokens.Add(tokenResult.Value);
+
+            // call repository para registrar el usuario en la bd  
+            var result = await _repository.Register(UserToAdd);
+            if (result is null) return Result<UserModel>.Failure("No se pudo crear el usuario. Problemas al registrarlo en la Bd.");
    
             // call EmailService 
-            var mailResult = await _emailService.SendActivationEmail(result.Name, result.Email, tokenResult.Value);
+            var mailResult = await _emailService.SendActivationEmail(result.Name, result.Email, tokenResult.Value.Token);
             if (!mailResult.IsSuccessful) return Result<UserModel>.Failure(mailResult.Error);
-            
+
+            //await transaction.CommitAsync();
+
             return Result<UserModel>.Success(result); 
         }
 
@@ -85,14 +92,13 @@ namespace AuthApi.Services.User
             // contorlo q el token corresponda al mandado por el usuario usuario con respecto al q tiene en la bd. en esta instancia existe y es activo
             if(activeTokenResult.Value.Token != token) return Result<bool>.Failure("El token no corresponde.");
 
-
             // Aca comienza la transacción para manejar dos actualizaciones en la bd
-            using var transaction = await _context.Database.BeginTransactionAsync();
+            //using var transaction = await _context.Database.BeginTransactionAsync();
 
             // se activa la cuenta del usuario
             var userActivationResult = await _repository.ActivateUserAsync(user);
             if (!userActivationResult) { 
-                await transaction.RollbackAsync();
+                //await transaction.RollbackAsync();
                 return Result<bool>.Failure($"Hubo problemas al activar el usuario de correo: {email}");
             }
             
@@ -100,21 +106,20 @@ namespace AuthApi.Services.User
             var tokenDesactivationResult = await _tokenService.DeactivateTokenAsync(activeTokenResult.Value);
             if (!tokenDesactivationResult.IsSuccessful) 
             {
-                await transaction.RollbackAsync();
+                //await transaction.RollbackAsync();
                 return Result<bool>.Failure($"Hubo problemas al desactivar el token. No se pudo activar el usuario: {email}");
             }
 
-            await transaction.CommitAsync();
+            //await transaction.CommitAsync();
 
             // todo salio bien se retorna true 
             return Result<bool>.Success(true);  
         }
 
-        private UserModel CreateModelUSer(UserRegisterDto NewUser) {
-            
+        private UserModel CreateModelUSer(UserRegisterDto NewUser) 
+        {
             UserModel UserToAdd = new UserModel
             {
-                Id = NewUser.Id,
                 Name = NewUser.Name,
                 LastName = NewUser.LastName,
                 Password = NewUser.Password,

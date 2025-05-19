@@ -25,7 +25,7 @@ namespace AuthApi.Repository
         public async Task<ActivationTokenModel> GetTokenForUSer(UserModel user)
         {
             var token = await _context.ActivationTokens
-                              .FirstOrDefaultAsync(t => t.UserId == user.Id && t.ExpirationDate < DateTime.UtcNow);
+                              .FirstOrDefaultAsync(t => t.User.Id == user.Id && t.ExpirationDate < DateTime.UtcNow);
             return token;
         }
 
