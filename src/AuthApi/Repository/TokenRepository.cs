@@ -1,5 +1,6 @@
 ﻿using AuthApi.Data;
 using AuthApi.Models.Db;
+using AuthApi.Utils;
 using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 
@@ -33,6 +34,11 @@ namespace AuthApi.Repository
         {
             token.ExpirationDate = DateTime.UtcNow;
             return true; 
+        }
+
+        public async Task<List<ActivationTokenModel>> GetAll()
+        {
+            return _context.ActivationTokens.ToList();
         }
     }
 }

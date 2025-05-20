@@ -10,8 +10,12 @@ namespace AuthApi.Controllers
     [Route("api/user")]
     public class UserController : ControllerBase
     {
-        private readonly UserService _userService;  
-        public UserController(UserService userService){ _userService = userService;}
+        private readonly UserService _userService;
+        private readonly TokenService _tokenService;    
+        public UserController(UserService userService, TokenService tokenService){
+            _userService = userService;
+            _tokenService = tokenService;   
+        }
 
         [HttpPost("register")]
         public async Task<IActionResult> RegisterUserAsync (UserRegisterDto newUser) 
@@ -36,6 +40,14 @@ namespace AuthApi.Controllers
             if (!result.IsSuccessful) return BadRequest(result.Error);
 
             return Ok(new { message = "Cuenta activada correctamente", email });
+        }
+
+        [HttpGet("get-all-tokens")]
+        public async Task<IActionResult> GetAllTokenAsync()
+        {
+            var result = await _tokenService.GetAll();  
+            if (!result.IsSuccessful) return BadRequest(result.Error);
+            return Ok(result.Value);
         }
     }
 }

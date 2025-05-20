@@ -43,14 +43,12 @@ namespace AuthApi.Services.User
             // Aca comienza la transacción para manejar dos actualizaciones en la bd
             //using var transaction = await _context.Database.BeginTransactionAsync();
 
-            //maps
-            var UserToAdd = CreateModelUSer(NewUser);
-
-            //call TokenService 
-            var tokenResult = await _tokenService.AddToken(UserToAdd);
+            //call TokenService - crea un topken en memoria
+            var tokenResult = await _tokenService.TokenCreate();
             if (!tokenResult.IsSuccessful) return Result<UserModel>.Failure(tokenResult.Error);
-
-            //UserToAdd.ActivationTokens.Add(tokenResult.Value);
+            
+            //maps
+            var UserToAdd = CreateModelUSer(NewUser, tokenResult.Value);
 
             // call repository para registrar el usuario en la bd  
             var result = await _repository.Register(UserToAdd);
@@ -116,7 +114,7 @@ namespace AuthApi.Services.User
             return Result<bool>.Success(true);  
         }
 
-        private UserModel CreateModelUSer(UserRegisterDto NewUser) 
+        private UserModel CreateModelUSer(UserRegisterDto NewUser, ActivationTokenModel token) 
         {
             UserModel UserToAdd = new UserModel
             {
@@ -126,6 +124,8 @@ namespace AuthApi.Services.User
                 Email = NewUser.Email,
                 DateOfBirth = NewUser.DateOfBirth
             };
+
+            UserToAdd.ActivationTokens.Add(token);  
 
             return UserToAdd;
         }
