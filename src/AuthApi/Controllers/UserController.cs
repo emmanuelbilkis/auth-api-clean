@@ -1,4 +1,5 @@
 using AuthApi.Dtos;
+using AuthApi.Interfaces;
 using AuthApi.Services.Email;
 using AuthApi.Services.Token;
 using AuthApi.Services.User;
@@ -10,11 +11,10 @@ namespace AuthApi.Controllers
     [Route("api/user")]
     public class UserController : ControllerBase
     {
-        private readonly UserService _userService;
-        private readonly TokenService _tokenService;    
-        public UserController(UserService userService, TokenService tokenService){
+        private readonly IUserService _userService;
+           
+        public UserController(IUserService userService){
             _userService = userService;
-            _tokenService = tokenService;   
         }
 
         [HttpPost("register")]
@@ -40,14 +40,6 @@ namespace AuthApi.Controllers
             if (!result.IsSuccessful) return BadRequest(result.Error);
 
             return Ok(new { message = "Cuenta activada correctamente", email });
-        }
-
-        [HttpGet("get-all-tokens")]
-        public async Task<IActionResult> GetAllTokenAsync()
-        {
-            var result = await _tokenService.GetAll();  
-            if (!result.IsSuccessful) return BadRequest(result.Error);
-            return Ok(result.Value);
         }
     }
 }

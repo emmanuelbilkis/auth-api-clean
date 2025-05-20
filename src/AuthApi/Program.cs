@@ -1,4 +1,5 @@
 using AuthApi.Data;
+using AuthApi.Interfaces;
 using AuthApi.Middlewares;
 using AuthApi.Models.Options;
 using AuthApi.Repository;
@@ -41,6 +42,10 @@ builder.Services.AddScoped<EmailService>();
 builder.Services.AddScoped<SmtpService>();  
 builder.Services.AddScoped<TokenService>();
 builder.Services.AddScoped<TokenRepository>();
+
+// Interfaces
+builder.Services.AddScoped<IUserService, UserService>();
+
 var app = builder.Build();
 
 // Configura el middleware para manejar excepciones globalmente

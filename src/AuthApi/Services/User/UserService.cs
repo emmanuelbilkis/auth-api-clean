@@ -10,10 +10,11 @@ using AuthApi.Services.Email;
 using AuthApi.Models.Db;
 using Microsoft.EntityFrameworkCore;
 using AuthApi.Data;
+using AuthApi.Interfaces;
 
 namespace AuthApi.Services.User
 {
-    public class UserService
+    public class UserService : IUserService 
     { 
         private readonly UserRepository _repository;
         private readonly TokenService _tokenService;
@@ -63,19 +64,6 @@ namespace AuthApi.Services.User
             return Result<UserModel>.Success(result); 
         }
 
-        private Result<bool> Validator(UserRegisterDto NewUser) 
-        {
-            UserRegisterValidator validator = new UserRegisterValidator();
-            ValidationResult resultValidator = validator.Validate(NewUser);
-
-            if (!resultValidator.IsValid)
-            {
-                return Result<bool>.Failure(string.Join(" | ", resultValidator.Errors.Select(e => e.ErrorMessage)));
-            } 
-
-            return Result<bool>.Success(true);
-        }
-
         public async Task<Result<bool>> ActivateAccountAsync(string email,string token) 
         {
             // traigo el usuario por mail y controlo q exista 
@@ -114,6 +102,13 @@ namespace AuthApi.Services.User
             return Result<bool>.Success(true);  
         }
 
+        public async Task<Result<List<UserModel>>> GetAll()
+        {
+            var result = await _repository.GetAll();
+            if (result is null) return Result<List<UserModel>>.Failure("Error inesperado");
+            return Result<List<UserModel>>.Success(result);
+        }
+
         private UserModel CreateModelUSer(UserRegisterDto NewUser, ActivationTokenModel token) 
         {
             UserModel UserToAdd = new UserModel
@@ -130,11 +125,17 @@ namespace AuthApi.Services.User
             return UserToAdd;
         }
 
-        public async Task<Result<List<UserModel>>> GetAll() 
-        {  
-            var result = await _repository.GetAll();    
-            if (result is null) return Result<List<UserModel>>.Failure("Error inesperado"); 
-            return Result<List<UserModel>>.Success(result);
+        private Result<bool> Validator(UserRegisterDto NewUser)
+        {
+            UserRegisterValidator validator = new UserRegisterValidator();
+            ValidationResult resultValidator = validator.Validate(NewUser);
+
+            if (!resultValidator.IsValid)
+            {
+                return Result<bool>.Failure(string.Join(" | ", resultValidator.Errors.Select(e => e.ErrorMessage)));
+            }
+
+            return Result<bool>.Success(true);
         }
     }
 }
