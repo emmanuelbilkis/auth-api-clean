@@ -1,38 +1,27 @@
 ﻿using AuthApi.Dtos;
-using AuthApi.Repository;
-using Microsoft.AspNetCore.Http.HttpResults;
-using System.Diagnostics.CodeAnalysis;
 using AuthApi.Validators;
 using FluentValidation.Results;
 using AuthApi.Utils;
-using AuthApi.Services.Token;
-using AuthApi.Services.Email;
 using AuthApi.Models.Db;
-using Microsoft.EntityFrameworkCore;
-using AuthApi.Data;
-using AuthApi.Interfaces;
+using AuthApi.Interfaces.IService;
+using AuthApi.Interfaces.IRepository;
 
 namespace AuthApi.Services.User
 {
     public class UserService : IUserService 
     { 
-        private readonly UserRepository _repository;
-        private readonly TokenService _tokenService;
-        private readonly EmailService _emailService;
-        private readonly ILogger<UserService> _logger;
-        private readonly AppDbContext _context;
-        public UserService(UserRepository repository,
-                           TokenService tokenService,
-                           EmailService emailService,
-                           ILogger<UserService> logger,
-                           AppDbContext context
+        private readonly IUserRepository _repository;
+        private readonly ITokenService _tokenService;
+        private readonly IEmailService _emailService;
+        public UserService(IUserRepository repository,
+                           ITokenService tokenService,
+                           IEmailService emailService
+                           
                            ) 
         { 
             _repository = repository; 
             _tokenService = tokenService;
             _emailService = emailService;
-            _logger = logger; 
-            _context = context;
         }
 
         public async Task<Result<UserModel>> Register(UserRegisterDto NewUser) 
@@ -40,9 +29,6 @@ namespace AuthApi.Services.User
             //validations
             var errorsResult = Validator(NewUser);
             if (!errorsResult.IsSuccessful) return Result<UserModel>.Failure(errorsResult.Error);
-
-            // Aca comienza la transacción para manejar dos actualizaciones en la bd
-            //using var transaction = await _context.Database.BeginTransactionAsync();
 
             //call TokenService - crea un topken en memoria
             var tokenResult = await _tokenService.TokenCreate();
@@ -58,8 +44,6 @@ namespace AuthApi.Services.User
             // call EmailService 
             var mailResult = await _emailService.SendActivationEmail(result.Name, result.Email, tokenResult.Value.Token);
             if (!mailResult.IsSuccessful) return Result<UserModel>.Failure(mailResult.Error);
-
-            //await transaction.CommitAsync();
 
             return Result<UserModel>.Success(result); 
         }

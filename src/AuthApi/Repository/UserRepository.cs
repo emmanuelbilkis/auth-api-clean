@@ -1,11 +1,12 @@
 ﻿using AuthApi.Data;
+using AuthApi.Interfaces.IRepository;
 using AuthApi.Models.Db;
 using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 
 namespace AuthApi.Repository
 {
-    public class UserRepository
+    public class UserRepository : IUserRepository
     {
         private readonly AppDbContext _context;
         private readonly ILogger<UserRepository> _logger;
@@ -25,11 +26,11 @@ namespace AuthApi.Repository
             return newUser;
         }
 
-        public async Task<UserModel> GetUserForEmail(string email) 
+        public async Task<UserModel> GetUserForEmail(string email)
         {
-            var user = await _context.Users.FirstOrDefaultAsync(u=>u.Email == email);
-            return user; 
-        }   
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == email);
+            return user;
+        }
 
         public async Task<List<UserModel>> GetAll()
         {
@@ -37,12 +38,12 @@ namespace AuthApi.Repository
             return users;
         }
 
-        public async Task<bool> ActivateUserAsync(UserModel user) 
+        public async Task<bool> ActivateUserAsync(UserModel user)
         {
-            user.IsActive = true; 
+            user.IsActive = true;
             _context.SaveChangesAsync();
 
-            return true; 
+            return true;
         }
     }
 }

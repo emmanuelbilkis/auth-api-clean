@@ -2,7 +2,7 @@
 using AuthApi.Models.Db;
 using AuthApi.Utils;
 
-namespace AuthApi.Interfaces
+namespace AuthApi.Interfaces.IService
 {
     public interface IUserService
     {

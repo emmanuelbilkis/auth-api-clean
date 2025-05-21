@@ -4,10 +4,11 @@ using MimeKit;
 using MailKit.Net.Smtp;
 using MailKit.Security;
 using AuthApi.Utils;
+using AuthApi.Interfaces.IService;
 
 namespace AuthApi.Services.Smtp
 {
-    public class SmtpService
+    public class SmtpService : ISmtpService
     {
         public readonly SmtpOptions _options;
         private readonly ILogger<SmtpService> _logger;

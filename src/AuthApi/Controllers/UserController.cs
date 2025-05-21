@@ -1,5 +1,5 @@
 using AuthApi.Dtos;
-using AuthApi.Interfaces;
+using AuthApi.Interfaces.IService;
 using AuthApi.Services.Email;
 using AuthApi.Services.Token;
 using AuthApi.Services.User;

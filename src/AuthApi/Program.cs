@@ -1,5 +1,5 @@
 using AuthApi.Data;
-using AuthApi.Interfaces;
+using AuthApi.Interfaces.IService;
 using AuthApi.Middlewares;
 using AuthApi.Models.Options;
 using AuthApi.Repository;
